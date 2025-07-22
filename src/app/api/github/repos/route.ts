@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
   }
 
   // Get the user's GitHub access token from the session
-  const token = session?.accessToken || session?.user?.accessToken;
+  const token = (session as { accessToken?: string }).accessToken;
   if (!token) {
     return NextResponse.json({ error: 'No GitHub access token found' }, { status: 401 });
   }
