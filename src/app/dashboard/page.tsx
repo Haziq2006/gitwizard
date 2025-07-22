@@ -45,6 +45,14 @@ interface SecretScan {
   createdAt: string;
 }
 
+// Define a type for GitHub repositories (minimal fields needed)
+type GitHubRepo = {
+  id: number;
+  name: string;
+  full_name: string;
+  private: boolean;
+};
+
 export default function DashboardPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -54,7 +62,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   // Repo connect modal state
   const [showRepoModal, setShowRepoModal] = useState(false);
-  const [githubRepos, setGithubRepos] = useState<any[]>([]);
+  const [githubRepos, setGithubRepos] = useState<GitHubRepo[]>([]);
   const [githubLoading, setGithubLoading] = useState(false);
   const [githubError, setGithubError] = useState<string | null>(null);
   // Billing modal state
@@ -140,7 +148,7 @@ export default function DashboardPage() {
   };
 
   // Handle repo selection
-  const handleSelectRepo = async (repo: any) => {
+  const handleSelectRepo = async (repo: GitHubRepo) => {
     try {
       const res = await fetch('/api/repositories', {
         method: 'POST',
