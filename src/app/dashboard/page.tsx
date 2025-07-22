@@ -132,7 +132,7 @@ export default function DashboardPage() {
     try {
       const res = await fetch('/api/github/repos');
       if (!res.ok) throw new Error('Failed to fetch GitHub repos');
-      const data = await res.json();
+      const data: GitHubRepo[] = await res.json();
       setGithubRepos(data);
     } catch (err: unknown) {
       setGithubError(err instanceof Error ? err.message : 'Failed to fetch GitHub repos');
@@ -500,7 +500,7 @@ export default function DashboardPage() {
             <h2 className="text-xl font-bold mb-4">How to Use GitWizard</h2>
             <ol className="list-decimal ml-6 text-sm mb-4 space-y-2">
               <li>Sign in with your GitHub account.</li>
-              <li>Connect a repository using the "Connect Repository" button.</li>
+              <li>Connect a repository using the &quot;Connect Repository&quot; button.</li>
               <li>GitWizard will automatically scan new commits for secrets (API keys, tokens, etc.).</li>
               <li>If a secret is detected, you will receive an email alert (and Slack/Discord alerts if on Pro/Business, coming soon!).</li>
               <li>View recent secret scans and repository status on your dashboard.</li>
