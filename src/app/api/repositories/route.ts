@@ -144,7 +144,7 @@ export async function POST(req: Request) {
       return NextResponse.json(
         { 
           error: 'Failed to create webhook',
-          details: typeof error === 'object' && error !== null && 'message' in error ? (error as any).message : String(error)
+          details: typeof error === 'object' && error !== null && 'message' in error ? String((error as { message: unknown }).message) : String(error)
         },
         { status: 500 }
       );
@@ -154,7 +154,7 @@ export async function POST(req: Request) {
     return NextResponse.json(
       { 
         error: 'Internal server error',
-        details: typeof error === 'object' && error !== null && 'message' in error ? (error as any).message : String(error)
+        details: typeof error === 'object' && error !== null && 'message' in error ? String((error as { message: unknown }).message) : String(error)
       },
       { status: 500 }
     );
