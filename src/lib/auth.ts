@@ -1,6 +1,7 @@
 import { NextAuthOptions } from 'next-auth';
 import GithubProvider from 'next-auth/providers/github';
 import { DatabaseService } from './database';
+import type { GithubProfile } from 'next-auth/providers/github';
 
 declare module 'next-auth' {
   interface Session {
@@ -44,7 +45,7 @@ export const authOptions: NextAuthOptions = {
             email: user.email || '',
             name: user.name || '',
             image: user.image || undefined,
-            github_id: (profile as any).id?.toString()
+            github_id: (profile as GithubProfile).id?.toString()
           });
           // Fetch the user to get the UUID and attach to the user object for jwt callback
           const dbUser = await DatabaseService.getUserByEmail(user.email || '');
@@ -66,7 +67,7 @@ export const authOptions: NextAuthOptions = {
       } else if (token.sub) {
         session.user.id = token.sub;
       }
-      if (token.github_id) {
+      if (typeof token.github_id === 'string') {
         session.user.github_id = token.github_id;
       }
       if (token.accessToken) {
@@ -93,7 +94,8 @@ export const authOptions: NextAuthOptions = {
         token.accessToken = account.access_token;
       }
       if (account?.provider === 'github' && profile) {
-        token.github_id = (profile as any).id;
+        const githubId = (profile as GithubProfile).id;
+        token.github_id = githubId ? githubId.toString() : undefined;
       }
       return token;
     }
