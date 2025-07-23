@@ -62,7 +62,7 @@ export const authOptions: NextAuthOptions = {
     },
     async session({ session, token }) {
       // Always set session.user.id to the internal user UUID from the database
-      if (token.internalUserId) {
+      if (typeof token.internalUserId === 'string') {
         session.user.id = token.internalUserId;
       } else if (token.sub) {
         session.user.id = token.sub;
