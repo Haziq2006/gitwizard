@@ -20,15 +20,15 @@ export async function POST(request: NextRequest) {
     const subscriptionId = session.subscription as string;
     if (userId && subscriptionId) {
       // Get subscription details
-      const sub = await stripe.subscriptions.retrieve(subscriptionId);
+      const sub = await stripe.subscriptions.retrieve(subscriptionId) as Stripe.Subscription;
       await DatabaseService.upsertSubscription({
         user_id: userId,
         stripe_customer_id: session.customer as string,
         stripe_subscription_id: subscriptionId,
         plan: sub.items.data[0].price.id === process.env.STRIPE_PRICE_ID_PRO ? 'pro' : 'business',
         status: sub.status,
-        current_period_start: new Date(sub.current_period_start * 1000).toISOString(),
-        current_period_end: new Date(sub.current_period_end * 1000).toISOString(),
+        current_period_start: new Date(sub.items.data[0].current_period_start * 1000).toISOString(),
+        current_period_end: new Date(sub.items.data[0].current_period_end * 1000).toISOString(),
       });
     }
   }
@@ -42,8 +42,8 @@ export async function POST(request: NextRequest) {
         stripe_subscription_id: sub.id,
         plan: sub.items.data[0].price.id === process.env.STRIPE_PRICE_ID_PRO ? 'pro' : 'business',
         status: sub.status,
-        current_period_start: new Date(sub.current_period_start * 1000).toISOString(),
-        current_period_end: new Date(sub.current_period_end * 1000).toISOString(),
+        current_period_start: new Date(sub.items.data[0].current_period_start * 1000).toISOString(),
+        current_period_end: new Date(sub.items.data[0].current_period_end * 1000).toISOString(),
       });
     }
   }
