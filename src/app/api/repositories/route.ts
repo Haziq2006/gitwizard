@@ -36,9 +36,12 @@ export async function POST(req: Request) {
     const subscription = await DatabaseService.getUserSubscription(userId);
     const plan = subscription?.plan || 'free';
     
-    // Count current repos
-    const userRepos = await DatabaseService.getUserRepositories(userId);
-    const repoCount = Array.isArray(userRepos) ? userRepos.length : 0;
+    // Count current repos (only active and fully connected)
+    const allUserRepos = await DatabaseService.getUserRepositories(userId);
+    const userRepos = Array.isArray(allUserRepos)
+      ? allUserRepos.filter(r => r.is_active === true && r.webhook_id != null)
+      : [];
+    const repoCount = userRepos.length;
     
     // Set plan limits
     let repoLimit = 1;
@@ -64,18 +67,38 @@ export async function POST(req: Request) {
       );
     }
 
+    // Check for duplicate repository
+    const duplicateRepo = userRepos.find(r => r.github_id === github_id);
+    if (duplicateRepo) {
+      return NextResponse.json(
+        { error: 'Repository already connected.' },
+        { status: 400 }
+      );
+    }
+
     // Insert the repository for the user
-    const repo = await DatabaseService.addRepository({
-      user_id: userId,
-      github_id,
-      name,
-      full_name,
-      private: !!isPrivate,
-    });
+    let repo;
+    try {
+      repo = await DatabaseService.addRepository({
+        user_id: userId,
+        github_id,
+        name,
+        full_name,
+        private: !!isPrivate,
+      });
+    } catch (error) {
+      console.error('Failed to add repository:', error);
+      return NextResponse.json(
+        { error: 'Failed to add repository.' },
+        { status: 400 }
+      );
+    }
 
     // Webhook setup
     const token = session.accessToken;
     if (!token) {
+      // Clean up the repo if we can't proceed
+      await DatabaseService.updateRepository(repo.id, { is_active: false });
       return NextResponse.json(
         { error: 'No GitHub access token found' },
         { status: 401 }
@@ -85,6 +108,8 @@ export async function POST(req: Request) {
     // Verify webhook URL is valid
     const webhookUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/webhook/github`;
     if (!webhookUrl.startsWith('https://')) {
+      // Clean up the repo if we can't proceed
+      await DatabaseService.updateRepository(repo.id, { is_active: false });
       return NextResponse.json(
         { error: 'Webhook URL must be HTTPS for production' },
         { status: 400 }
@@ -114,12 +139,14 @@ export async function POST(req: Request) {
         }),
       });
 
+      // If webhook creation fails, clean up the repo
       if (!webhookRes.ok) {
+        await DatabaseService.updateRepository(repo.id, { is_active: false });
         const errorData = await webhookRes.json();
         console.error('GitHub API Error:', errorData);
         return NextResponse.json(
           { 
-            error: 'Failed to create webhook',
+            error: 'Failed to create webhook on GitHub.',
             details: errorData.message || 'Unknown error'
           },
           { status: webhookRes.status }
