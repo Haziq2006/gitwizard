@@ -32,6 +32,7 @@ interface Repository {
   private: boolean;
   isActive: boolean;
   createdAt: string;
+  webhook_id?: number | null;
 }
 
 interface SecretScan {
@@ -393,12 +394,17 @@ export default function DashboardPage() {
                       {repositories.map((repo) => (
                         <div key={repo.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
                           <div className="flex items-center space-x-3">
-                            <div className={`w-3 h-3 rounded-full ${repo.isActive ? 'bg-green-500' : 'bg-gray-300'}`}></div>
+                            {repo.isActive && repo.webhook_id != null ? (
+                              <CheckCircle className="w-5 h-5 text-green-500" aria-label="Connected" />
+                            ) : (
+                              <div className="w-5 h-5 rounded-full bg-gray-300" aria-label="Not connected" />
+                            )}
                             <div>
-                              <h3 className="font-medium text-gray-900">{repo.fullName}</h3>
+                              <h3 className="font-medium text-gray-900">{repo.name}</h3>
                               <p className="text-sm text-gray-600">
                                 {repo.private ? 'Private' : 'Public'} • Added {new Date(repo.createdAt).toLocaleDateString()}
                               </p>
+                              <p className="text-xs text-gray-500">Full name: {repo.fullName}</p>
                             </div>
                           </div>
                           <div className="flex items-center space-x-2">
