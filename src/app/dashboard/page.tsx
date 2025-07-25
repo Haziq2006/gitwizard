@@ -13,7 +13,8 @@ import {
   Bell,
   Github,
   TrendingUp,
-  Clock
+  Clock,
+  Loader2
 } from 'lucide-react';
 
 interface DashboardStats {
@@ -73,6 +74,7 @@ export default function DashboardPage() {
   const [billingLoading, setBillingLoading] = useState(false);
   const [billingError, setBillingError] = useState<string | null>(null);
   const [showDocModal, setShowDocModal] = useState(false);
+  const [connectingRepo, setConnectingRepo] = useState<number | null>(null);
 
   // Fetch user subscription plan
   const fetchPlan = async () => {
@@ -150,6 +152,7 @@ export default function DashboardPage() {
 
   // Handle repo selection
   const handleSelectRepo = async (repo: GitHubRepo) => {
+    setConnectingRepo(repo.id);
     try {
       const res = await fetch('/api/repositories', {
         method: 'POST',
@@ -161,11 +164,16 @@ export default function DashboardPage() {
           private: repo.private,
         }),
       });
-      if (!res.ok) throw new Error('Failed to connect repository');
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || 'Failed to connect repository');
+      }
       setShowRepoModal(false);
       fetchDashboardData();
     } catch (err: unknown) {
       alert(err instanceof Error ? err.message : 'Failed to connect repository');
+    } finally {
+      setConnectingRepo(null);
     }
   };
 
@@ -423,29 +431,87 @@ export default function DashboardPage() {
 
           {/* Repo Connect Modal */}
           {showRepoModal && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-              <div className="bg-white rounded-lg shadow-lg p-8 max-w-lg w-full">
-                <h2 className="text-xl font-bold mb-4">Select a GitHub Repository</h2>
-                {githubLoading && <div>Loading repositories...</div>}
-                {githubError && <div className="text-red-600 mb-2">{githubError}</div>}
-                {!githubLoading && !githubError && (
-                  <ul className="max-h-64 overflow-y-auto divide-y">
-                    {githubRepos.map((repo) => (
-                      <li key={repo.id} className="py-2 flex items-center justify-between">
-                        <span>{repo.full_name}</span>
-                        <button
-                          className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs font-medium"
-                          onClick={() => handleSelectRepo(repo)}
-                        >
-                          Connect
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
+              <div className="bg-white rounded-xl shadow-2xl p-8 max-w-lg w-full mx-4 border border-gray-100">
+                <div className="flex items-center mb-6">
+                  <div className="p-2 bg-blue-100 rounded-lg mr-3">
+                    <Github className="w-6 h-6 text-blue-600" />
+                  </div>
+                  <h2 className="text-xl font-bold text-gray-900">Connect Repository</h2>
+                </div>
+                
+                {githubLoading && (
+                  <div className="flex items-center justify-center py-8">
+                    <Loader2 className="w-6 h-6 text-blue-600 animate-spin mr-2" />
+                    <span className="text-gray-600">Loading your repositories...</span>
+                  </div>
                 )}
+                
+                {githubError && (
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+                    <div className="flex items-center">
+                      <AlertTriangle className="w-5 h-5 text-red-600 mr-2" />
+                      <span className="text-red-800 font-medium">Error loading repositories</span>
+                    </div>
+                    <p className="text-red-700 text-sm mt-1">{githubError}</p>
+                  </div>
+                )}
+                
+                {!githubLoading && !githubError && (
+                  <div className="space-y-3">
+                    <p className="text-sm text-gray-600 mb-4">Select a repository to connect and start monitoring for secrets:</p>
+                    <div className="max-h-64 overflow-y-auto border border-gray-200 rounded-lg">
+                      {githubRepos.length === 0 ? (
+                        <div className="text-center py-8">
+                          <Github className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                          <p className="text-gray-600 text-sm">No repositories found</p>
+                        </div>
+                      ) : (
+                        <ul className="divide-y divide-gray-100">
+                          {githubRepos.map((repo) => (
+                            <li key={repo.id} className="p-3 hover:bg-gray-50 transition-colors">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center space-x-3">
+                                  <div className={`w-2 h-2 rounded-full ${repo.private ? 'bg-orange-400' : 'bg-green-400'}`}></div>
+                                  <div>
+                                    <p className="font-medium text-gray-900">{repo.name}</p>
+                                    <p className="text-xs text-gray-500">{repo.full_name}</p>
+                                  </div>
+                                </div>
+                                <button
+                                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center space-x-2 ${
+                                    connectingRepo === repo.id
+                                      ? 'bg-blue-100 text-blue-700 cursor-not-allowed'
+                                      : 'bg-blue-600 hover:bg-blue-700 text-white hover:shadow-md'
+                                  }`}
+                                  onClick={() => handleSelectRepo(repo)}
+                                  disabled={connectingRepo === repo.id}
+                                >
+                                  {connectingRepo === repo.id ? (
+                                    <>
+                                      <Loader2 className="w-4 h-4 animate-spin" />
+                                      <span>Connecting...</span>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Plus className="w-4 h-4" />
+                                      <span>Connect</span>
+                                    </>
+                                  )}
+                                </button>
+                              </div>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  </div>
+                )}
+                
                 <button
-                  className="mt-6 w-full bg-gray-200 hover:bg-gray-300 text-gray-900 py-2 px-4 rounded-lg font-medium"
+                  className="mt-6 w-full bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 px-4 rounded-lg font-medium transition-colors"
                   onClick={() => setShowRepoModal(false)}
+                  disabled={connectingRepo !== null}
                 >
                   Cancel
                 </button>

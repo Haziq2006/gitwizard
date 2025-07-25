@@ -67,8 +67,11 @@ export async function POST(req: Request) {
       );
     }
 
-    // Check for duplicate repository
-    const duplicateRepo = userRepos.find(r => r.github_id === github_id);
+    // Check for duplicate repository (check ALL repos, not just active ones)
+    const allUserReposForDuplicateCheck = await DatabaseService.getUserRepositories(userId);
+    const duplicateRepo = Array.isArray(allUserReposForDuplicateCheck) 
+      ? allUserReposForDuplicateCheck.find(r => r.github_id === github_id)
+      : null;
     if (duplicateRepo) {
       return NextResponse.json(
         { error: 'Repository already connected.' },
@@ -144,6 +147,21 @@ export async function POST(req: Request) {
         await DatabaseService.updateRepository(repo.id, { is_active: false });
         const errorData = await webhookRes.json();
         console.error('GitHub API Error:', errorData);
+        
+        // Handle specific webhook errors
+        if (webhookRes.status === 422 && errorData.message === 'Validation Failed') {
+          const hookError = errorData.errors?.find((e: { resource: string; message: string }) => e.resource === 'Hook');
+          if (hookError?.message === 'Hook already exists on this repository') {
+            return NextResponse.json(
+              { 
+                error: 'Webhook already exists for this repository. Please remove it from GitHub settings first.',
+                details: 'A webhook for this repository already exists. You may need to remove it manually from the repository settings.'
+              },
+              { status: 409 }
+            );
+          }
+        }
+        
         return NextResponse.json(
           { 
             error: 'Failed to create webhook on GitHub.',
