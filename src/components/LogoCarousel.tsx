@@ -137,12 +137,12 @@ export default function LogoCarousel() {
   useEffect(() => {
     const interval = setInterval(() => {
       setScrollPosition((prev) => {
-        // Move by 150px every 1.5 seconds for smooth scrolling
-        const newPosition = prev + 150;
+        // Move by 100px every 2.5 seconds for smoother scrolling
+        const newPosition = prev + 100;
         // Reset when we've scrolled through all logos
         return newPosition >= logos.length * 120 ? 0 : newPosition;
       });
-    }, 1500); // Change every 1.5 seconds
+    }, 2500); // Change every 2.5 seconds
 
     return () => clearInterval(interval);
   }, []);
@@ -162,7 +162,7 @@ export default function LogoCarousel() {
         <div className="relative overflow-hidden">
           {/* Continuous scrolling carousel */}
           <div 
-            className="flex items-center space-x-8 transition-transform duration-1500 ease-linear"
+            className="flex items-center space-x-8 transition-transform duration-2500 ease-in-out"
             style={{ 
               transform: `translateX(-${scrollPosition}px)`,
               width: `${logos.length * 120}px` // 120px per logo (80px logo + 40px spacing)
