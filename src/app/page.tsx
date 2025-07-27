@@ -139,7 +139,7 @@ export default function HomePage() {
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-4">Instant Alerts</h3>
               <p className="text-gray-600">
-                Get notified immediately via email, Slack, or Discord when secrets are detected.
+                Get notified immediately via email when secrets are detected. Slack/Discord integration coming soon.
               </p>
             </div>
             
@@ -149,7 +149,7 @@ export default function HomePage() {
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-4">Auto-Revocation</h3>
               <p className="text-gray-600">
-                Automatically revoke exposed secrets and rotate credentials (Business plan).
+                Automatically revoke exposed secrets and rotate credentials (Business plan - coming soon).
               </p>
             </div>
             
@@ -159,7 +159,7 @@ export default function HomePage() {
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-4">Comprehensive Coverage</h3>
               <p className="text-gray-600">
-                Detect AWS keys, Stripe tokens, GitHub tokens, database URLs, and custom patterns.
+                Detect AWS keys, Stripe tokens, GitHub tokens, AI API keys (OpenAI, Claude, DeepSeek), database URLs, and more.
               </p>
             </div>
             
@@ -179,7 +179,7 @@ export default function HomePage() {
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-4">Custom Patterns</h3>
               <p className="text-gray-600">
-                Add your own regex patterns to detect organization-specific secrets.
+                Add your own regex patterns to detect organization-specific secrets (coming soon).
               </p>
             </div>
           </div>
@@ -260,11 +260,11 @@ export default function HomePage() {
                 </li>
                 <li className="flex items-center">
                   <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
-                  <span>Slack/Discord integration</span>
+                  <span>Slack/Discord integration <span className="text-xs text-gray-500 ml-1">(Coming Soon)</span></span>
                 </li>
                 <li className="flex items-center">
                   <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
-                  <span>Custom patterns</span>
+                  <span>Custom patterns <span className="text-xs text-gray-500 ml-1">(Coming Soon)</span></span>
                 </li>
                 <li className="flex items-center">
                   <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
@@ -292,19 +292,19 @@ export default function HomePage() {
                 </li>
                 <li className="flex items-center">
                   <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
-                  <span>Auto-secret revocation</span>
+                  <span>Auto-secret revocation <span className="text-xs text-gray-500 ml-1">(Coming Soon)</span></span>
                 </li>
                 <li className="flex items-center">
                   <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
-                  <span>Team collaboration</span>
+                  <span>Team collaboration <span className="text-xs text-gray-500 ml-1">(Coming Soon)</span></span>
                 </li>
                 <li className="flex items-center">
                   <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
-                  <span>Advanced analytics</span>
+                  <span>Advanced analytics <span className="text-xs text-gray-500 ml-1">(Coming Soon)</span></span>
                 </li>
                 <li className="flex items-center">
                   <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
-                  <span>API access</span>
+                  <span>API access <span className="text-xs text-gray-500 ml-1">(Coming Soon)</span></span>
                 </li>
                 <li className="flex items-center">
                   <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
