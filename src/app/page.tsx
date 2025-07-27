@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Shield, Zap, Eye, Bell, CheckCircle, Star, Github, ArrowRight } from 'lucide-react';
+import FeedbackButton from '@/components/FeedbackButton';
 
 export default function HomePage() {
   return (
@@ -381,6 +382,9 @@ export default function HomePage() {
           </div>
         </div>
       </footer>
+      
+      {/* Feedback Button */}
+      <FeedbackButton />
     </div>
   );
 }
