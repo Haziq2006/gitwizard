@@ -101,6 +101,24 @@ export class DatabaseService {
     return data;
   }
 
+  static async deleteRepository(repoId: string) {
+    const { error } = await supabaseAdmin
+      .from(TABLES.REPOSITORIES)
+      .delete()
+      .eq('id', repoId);
+    if (error) throw error;
+  }
+
+  static async getRepositoryById(repoId: string) {
+    const { data, error } = await supabaseAdmin
+      .from(TABLES.REPOSITORIES)
+      .select('*')
+      .eq('id', repoId)
+      .single();
+    if (error) throw error;
+    return data;
+  }
+
   static async getRepositoryScans(repositoryId: string, limit = 50) {
     const { data, error } = await supabaseAdmin
       .from(TABLES.SECRET_SCANS)

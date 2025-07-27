@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { DatabaseService } from '@/lib/database';
+import { GitHubService } from '@/lib/github';
 
 export async function GET(request: NextRequest) {
   try {
@@ -122,56 +123,13 @@ export async function POST(req: Request) {
     const [owner, repoName] = full_name.split('/');
     
     try {
-      const webhookRes = await fetch(`https://api.github.com/repos/${owner}/${repoName}/hooks`, {
-        method: 'POST',
-        headers: {
-          Authorization: `token ${token}`,
-          Accept: 'application/vnd.github.v3+json',
-          'User-Agent': 'GitWizard/1.0',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: 'web',
-          active: true,
-          events: ['push'],
-          config: {
-            url: webhookUrl,
-            content_type: 'json',
-            secret: process.env.GITHUB_WEBHOOK_SECRET,
-          },
-        }),
-      });
-
-      // If webhook creation fails, clean up the repo
-      if (!webhookRes.ok) {
-        await DatabaseService.updateRepository(repo.id, { is_active: false });
-        const errorData = await webhookRes.json();
-        console.error('GitHub API Error:', errorData);
-        
-        // Handle specific webhook errors
-        if (webhookRes.status === 422 && errorData.message === 'Validation Failed') {
-          const hookError = errorData.errors?.find((e: { resource: string; message: string }) => e.resource === 'Hook');
-          if (hookError?.message === 'Hook already exists on this repository') {
-            return NextResponse.json(
-              { 
-                error: 'Webhook already exists for this repository. Please remove it from GitHub settings first.',
-                details: 'A webhook for this repository already exists. You may need to remove it manually from the repository settings.'
-              },
-              { status: 409 }
-            );
-          }
-        }
-        
-        return NextResponse.json(
-          { 
-            error: 'Failed to create webhook on GitHub.',
-            details: errorData.message || 'Unknown error'
-          },
-          { status: webhookRes.status }
-        );
-      }
-
-      const webhookData = await webhookRes.json();
+      // Use the GitHub service with conflict resolution
+      const githubService = new GitHubService(token);
+      const webhookData = await githubService.createWebhookWithConflictResolution(
+        owner, 
+        repoName, 
+        webhookUrl
+      );
       
       // Update repository with webhook ID
       await DatabaseService.updateRepository(repo.id, { 
@@ -201,6 +159,150 @@ export async function POST(req: Request) {
         error: 'Internal server error',
         details: typeof error === 'object' && error !== null && 'message' in error ? String((error as { message: unknown }).message) : String(error)
       },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PATCH(request: NextRequest) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const body = await request.json();
+    const { repoId, action } = body;
+    
+    if (!repoId || action !== 'recreate-webhook') {
+      return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
+    }
+
+    // Get the repository to verify ownership
+    const repository = await DatabaseService.getRepositoryById(repoId);
+    
+    if (!repository) {
+      return NextResponse.json({ error: 'Repository not found' }, { status: 404 });
+    }
+
+    if (repository.user_id !== session.user.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const token = session.accessToken;
+    if (!token) {
+      return NextResponse.json({ error: 'No GitHub access token found' }, { status: 401 });
+    }
+
+    // Verify webhook URL is valid
+    const webhookUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/webhook/github`;
+    if (!webhookUrl.startsWith('https://')) {
+      return NextResponse.json(
+        { error: 'Webhook URL must be HTTPS for production' },
+        { status: 400 }
+      );
+    }
+
+    const [owner, repoName] = repository.full_name.split('/');
+    
+    try {
+      // Delete existing webhook if it exists
+      if (repository.webhook_id) {
+        try {
+          const githubService = new GitHubService(token);
+          await githubService.deleteWebhook(owner, repoName, repository.webhook_id);
+        } catch (error) {
+          console.error('Failed to delete existing webhook:', error);
+          // Continue anyway, the new webhook creation will handle conflicts
+        }
+      }
+
+      // Create new webhook with conflict resolution
+      const githubService = new GitHubService(token);
+      const webhookData = await githubService.createWebhookWithConflictResolution(
+        owner, 
+        repoName, 
+        webhookUrl
+      );
+      
+      // Update repository with new webhook ID
+      await DatabaseService.updateRepository(repoId, { 
+        webhook_id: webhookData.id,
+        is_active: true
+      });
+
+      return NextResponse.json({ 
+        message: 'Webhook recreated successfully',
+        webhook_id: webhookData.id
+      });
+
+    } catch (error) {
+      console.error('Webhook recreation failed:', error);
+      return NextResponse.json(
+        { 
+          error: 'Failed to recreate webhook',
+          details: error instanceof Error ? error.message : 'Unknown error'
+        },
+        { status: 500 }
+      );
+    }
+  } catch (error) {
+    console.error('Error in PATCH /api/repositories:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { searchParams } = new URL(request.url);
+    const repoId = searchParams.get('id');
+    
+    if (!repoId) {
+      return NextResponse.json({ error: 'Repository ID is required' }, { status: 400 });
+    }
+
+    // Get the repository to verify ownership and get webhook info
+    const repository = await DatabaseService.getRepositoryById(repoId);
+    
+    if (!repository) {
+      return NextResponse.json({ error: 'Repository not found' }, { status: 404 });
+    }
+
+    if (repository.user_id !== session.user.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Delete webhook from GitHub if it exists
+    if (repository.webhook_id) {
+      try {
+        const token = session.accessToken;
+        if (token) {
+          const [owner, repoName] = repository.full_name.split('/');
+          const githubService = new GitHubService(token);
+          await githubService.deleteWebhook(owner, repoName, repository.webhook_id);
+        }
+      } catch (error) {
+        console.error('Failed to delete webhook from GitHub:', error);
+        // Continue with repository deletion even if webhook deletion fails
+      }
+    }
+
+    // Delete the repository from database
+    await DatabaseService.deleteRepository(repoId);
+
+    return NextResponse.json({ message: 'Repository deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting repository:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }

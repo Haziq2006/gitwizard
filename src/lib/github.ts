@@ -269,4 +269,57 @@ export class GitHubService {
 
     return response.json();
   }
+
+  /**
+   * List webhooks for repository
+   */
+  async listWebhooks(owner: string, repo: string) {
+    const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/hooks`, {
+      headers: this.getHeaders()
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to list webhooks: ${response.statusText}`);
+    }
+
+    return response.json();
+  }
+
+  /**
+   * Create webhook with conflict resolution
+   */
+  async createWebhookWithConflictResolution(owner: string, repo: string, webhookUrl: string) {
+    try {
+      // First, try to create the webhook
+      return await this.createWebhook(owner, repo, webhookUrl);
+    } catch (error) {
+      // If it's a conflict error, try to find and delete existing webhook
+      if (error instanceof Error && error.message.includes('Hook already exists')) {
+        console.log('Webhook already exists, attempting to clean up...');
+        
+        // List existing webhooks
+        const webhooks = await this.listWebhooks(owner, repo);
+        
+        // Find webhook with matching URL
+        const existingWebhook = webhooks.find((hook: { config: { url: string }; id: number }) => 
+          hook.config.url === webhookUrl
+        );
+        
+        if (existingWebhook) {
+          // Delete the existing webhook
+          await this.deleteWebhook(owner, repo, existingWebhook.id);
+          console.log(`Deleted existing webhook ${existingWebhook.id}`);
+          
+          // Try to create the webhook again
+          return await this.createWebhook(owner, repo, webhookUrl);
+        } else {
+          // Webhook exists but doesn't match our URL, throw error
+          throw new Error('Repository has existing webhooks that do not match our configuration. Please remove them manually from GitHub settings.');
+        }
+      }
+      
+      // Re-throw other errors
+      throw error;
+    }
+  }
 } 
