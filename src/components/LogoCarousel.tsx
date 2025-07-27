@@ -108,16 +108,18 @@ export default function LogoCarousel() {
         
         <div className="relative overflow-hidden">
           {/* Main carousel */}
-          <div className="flex justify-center items-center space-x-8">
+          <div className="flex justify-center items-center space-x-6">
             {logos.map((logo, index) => (
               <div
                 key={logo.name}
                 className={`flex flex-col items-center transition-all duration-700 ${
                   index === currentIndex
-                    ? 'opacity-100 scale-125'
+                    ? 'opacity-100 scale-110'
                     : index === (currentIndex + 1) % logos.length || index === (currentIndex - 1 + logos.length) % logos.length
-                    ? 'opacity-70 scale-95'
-                    : 'opacity-40 scale-80'
+                    ? 'opacity-80 scale-100'
+                    : index === (currentIndex + 2) % logos.length || index === (currentIndex - 2 + logos.length) % logos.length
+                    ? 'opacity-60 scale-90'
+                    : 'opacity-30 scale-80'
                 }`}
               >
                 <div className="w-16 h-16 bg-white rounded-lg flex items-center justify-center mb-3 shadow-sm border border-gray-200">
@@ -149,25 +151,7 @@ export default function LogoCarousel() {
           </div>
         </div>
         
-        {/* Static grid for mobile */}
-        <div className="hidden md:block mt-8">
-          <div className="grid grid-cols-6 gap-6">
-            {logos.map((logo) => (
-              <div key={logo.name} className="flex flex-col items-center">
-                <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center mb-2 shadow-sm border border-gray-200">
-                  <img 
-                    src={logo.logo} 
-                    alt={logo.alt}
-                    className="w-8 h-8 object-contain"
-                  />
-                </div>
-                <span className="text-xs text-gray-500 text-center">
-                  {logo.category}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
+
       </div>
     </div>
   );
