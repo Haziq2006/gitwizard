@@ -175,11 +175,13 @@ export default function LogoCarousel() {
                 className="flex flex-col items-center min-w-[80px]"
               >
                 <div className="w-16 h-16 bg-white rounded-lg flex items-center justify-center mb-3 shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-                  <img
-                    src={logo.logo}
-                    alt={logo.alt}
-                    className="w-10 h-10 object-contain"
-                  />
+                                           <img
+                           src={logo.logo}
+                           alt={logo.alt}
+                           className="w-10 h-10 object-contain"
+                           width={40}
+                           height={40}
+                         />
                 </div>
                 <span className="text-xs text-gray-600 font-medium text-center">
                   {logo.category}

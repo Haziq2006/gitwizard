@@ -4,7 +4,7 @@ import { authOptions } from '@/lib/auth';
 import { DatabaseService } from '@/lib/database';
 import { GitHubService } from '@/lib/github';
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const session = await getServerSession(authOptions);
     
@@ -13,7 +13,6 @@ export async function GET(request: NextRequest) {
     }
 
     const repositories = await DatabaseService.getUserRepositories(session.user.id);
-    
     return NextResponse.json(repositories);
   } catch (error) {
     console.error('Error fetching repositories:', error);
@@ -153,12 +152,9 @@ export async function POST(req: Request) {
       );
     }
   } catch (error) {
-    console.error('Error in POST /api/repositories:', error);
+    console.error('Repository creation error:', error);
     return NextResponse.json(
-      { 
-        error: 'Internal server error',
-        details: typeof error === 'object' && error !== null && 'message' in error ? String((error as { message: unknown }).message) : String(error)
-      },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }

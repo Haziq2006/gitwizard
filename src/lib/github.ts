@@ -257,7 +257,7 @@ export class GitHubService {
     try {
       await this.getRepository(owner, repo);
       return true;
-    } catch (error) {
+    } catch {
       return false;
     }
   }

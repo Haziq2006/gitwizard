@@ -300,6 +300,8 @@ export default function DashboardPage() {
                   src={session?.user?.image || '/default-avatar.png'} 
                   alt="Profile" 
                   className="w-8 h-8 rounded-full"
+                  width={32}
+                  height={32}
                 />
                 <span className="text-sm font-medium text-gray-700">
                   {session?.user?.name}
