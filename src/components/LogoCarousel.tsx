@@ -59,7 +59,7 @@ const logos = [
   },
   {
     name: 'Google Cloud',
-    logo: '/logos/google-cloud.svg',
+    logo: '/logos/googlecloud.svg',
     alt: 'Google Cloud Platform',
     category: 'Cloud Provider'
   },
@@ -132,12 +132,17 @@ const logos = [
 ];
 
 export default function LogoCarousel() {
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [scrollPosition, setScrollPosition] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % logos.length);
-    }, 3000); // Change every 3 seconds
+      setScrollPosition((prev) => {
+        // Move by 150px every 1.5 seconds for smooth scrolling
+        const newPosition = prev + 150;
+        // Reset when we've scrolled through all logos
+        return newPosition >= logos.length * 120 ? 0 : newPosition;
+      });
+    }, 1500); // Change every 1.5 seconds
 
     return () => clearInterval(interval);
   }, []);
@@ -155,51 +160,34 @@ export default function LogoCarousel() {
         </div>
         
         <div className="relative overflow-hidden">
-          {/* Main carousel */}
-          <div className="flex justify-center items-center space-x-6">
-            {logos.map((logo, index) => (
+          {/* Continuous scrolling carousel */}
+          <div 
+            className="flex items-center space-x-8 transition-transform duration-1500 ease-linear"
+            style={{ 
+              transform: `translateX(-${scrollPosition}px)`,
+              width: `${logos.length * 120}px` // 120px per logo (80px logo + 40px spacing)
+            }}
+          >
+            {/* Duplicate logos for seamless loop */}
+            {[...logos, ...logos].map((logo, index) => (
               <div
-                key={logo.name}
-                className={`flex flex-col items-center transition-all duration-700 ${
-                  index === currentIndex
-                    ? 'opacity-100 scale-110'
-                    : index === (currentIndex + 1) % logos.length || index === (currentIndex - 1 + logos.length) % logos.length
-                    ? 'opacity-80 scale-100'
-                    : index === (currentIndex + 2) % logos.length || index === (currentIndex - 2 + logos.length) % logos.length
-                    ? 'opacity-60 scale-90'
-                    : 'opacity-30 scale-80'
-                }`}
+                key={`${logo.name}-${index}`}
+                className="flex flex-col items-center min-w-[80px]"
               >
-                <div className="w-16 h-16 bg-white rounded-lg flex items-center justify-center mb-3 shadow-sm border border-gray-200">
-                  <img 
-                    src={logo.logo} 
+                <div className="w-16 h-16 bg-white rounded-lg flex items-center justify-center mb-3 shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+                  <img
+                    src={logo.logo}
                     alt={logo.alt}
                     className="w-10 h-10 object-contain"
                   />
                 </div>
-                <span className="text-xs text-gray-600 font-medium">
+                <span className="text-xs text-gray-600 font-medium text-center">
                   {logo.category}
                 </span>
               </div>
             ))}
           </div>
-          
-          {/* Dots indicator */}
-          <div className="flex justify-center mt-6 space-x-2">
-            {logos.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentIndex(index)}
-                className={`w-2 h-2 rounded-full transition-colors ${
-                  index === currentIndex ? 'bg-blue-600' : 'bg-gray-300'
-                }`}
-                aria-label={`Go to slide ${index + 1}`}
-              />
-            ))}
-          </div>
         </div>
-        
-
       </div>
     </div>
   );
