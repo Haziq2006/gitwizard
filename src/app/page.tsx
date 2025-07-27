@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Shield, Zap, Eye, Bell, CheckCircle, Star, Github, ArrowRight } from 'lucide-react';
 import FeedbackButton from '@/components/FeedbackButton';
+import LogoCarousel from '@/components/LogoCarousel';
 
 export default function HomePage() {
   return (
@@ -105,6 +106,9 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Logo Carousel Section */}
+      <LogoCarousel />
 
       {/* Features Section */}
       <section id="features" className="py-20 bg-white">

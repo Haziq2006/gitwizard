@@ -57,6 +57,36 @@ export class SecretScanner {
       examples: ['api_key: "your-api-key-here"']
     },
     {
+      type: SecretType.OPENAI_API_KEY,
+      pattern: /sk-[0-9a-zA-Z]{48}/g,
+      description: 'OpenAI API Key',
+      examples: ['sk-1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz']
+    },
+    {
+      type: SecretType.ANTHROPIC_API_KEY,
+      pattern: /sk-ant-[0-9a-zA-Z]{48}/g,
+      description: 'Anthropic Claude API Key',
+      examples: ['sk-ant-1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz']
+    },
+    {
+      type: SecretType.DEEPSEEK_API_KEY,
+      pattern: /sk-[0-9a-zA-Z]{32,}/g,
+      description: 'DeepSeek API Key',
+      examples: ['sk-1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz']
+    },
+    {
+      type: SecretType.GOOGLE_AI_API_KEY,
+      pattern: /AIza[0-9A-Za-z-_]{35}/g,
+      description: 'Google AI API Key',
+      examples: ['AIzaSyC1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz']
+    },
+    {
+      type: SecretType.HUGGINGFACE_API_KEY,
+      pattern: /hf_[0-9a-zA-Z]{39}/g,
+      description: 'Hugging Face API Key',
+      examples: ['hf_1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz']
+    },
+    {
       type: SecretType.PRIVATE_KEY,
       pattern: /-----BEGIN PRIVATE KEY-----[\s\S]*?-----END PRIVATE KEY-----/g,
       description: 'Private Key (PEM format)',

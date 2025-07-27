@@ -78,6 +78,11 @@ export enum SecretType {
   DATABASE_URL = 'database_url',
   JWT_SECRET = 'jwt_secret',
   API_KEY = 'api_key',
+  OPENAI_API_KEY = 'openai_api_key',
+  ANTHROPIC_API_KEY = 'anthropic_api_key',
+  DEEPSEEK_API_KEY = 'deepseek_api_key',
+  GOOGLE_AI_API_KEY = 'google_ai_api_key',
+  HUGGINGFACE_API_KEY = 'huggingface_api_key',
   PRIVATE_KEY = 'private_key',
   SSH_KEY = 'ssh_key',
   CUSTOM = 'custom'
