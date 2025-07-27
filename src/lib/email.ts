@@ -108,6 +108,68 @@ export class EmailService {
   }
 
   /**
+   * Get display name for secret type
+   */
+  static getSecretTypeDisplayName(secretType: string): string {
+    const displayNames: Record<string, string> = {
+      'aws_access_key': 'AWS Access Key',
+      'aws_secret_key': 'AWS Secret Key',
+      'stripe_secret_key': 'Stripe Secret Key',
+      'stripe_publishable_key': 'Stripe Publishable Key',
+      'github_token': 'GitHub Token',
+      'github_personal_access_token': 'GitHub Personal Access Token',
+      'database_url': 'Database URL',
+      'jwt_secret': 'JWT Secret',
+      'api_key': 'API Key',
+      'openai_api_key': 'OpenAI API Key',
+      'anthropic_api_key': 'Anthropic Claude API Key',
+      'deepseek_api_key': 'DeepSeek API Key',
+      'google_ai_api_key': 'Google AI API Key',
+      'huggingface_api_key': 'Hugging Face API Key',
+      'cohere_api_key': 'Cohere API Key',
+      'replicate_api_key': 'Replicate API Key',
+      'together_ai_api_key': 'Together AI API Key',
+      'azure_openai_api_key': 'Azure OpenAI API Key',
+      'google_cloud_api_key': 'Google Cloud API Key',
+      'firebase_api_key': 'Firebase API Key',
+      'sendgrid_api_key': 'SendGrid API Key',
+      'twilio_api_key': 'Twilio API Key',
+      'mailgun_api_key': 'Mailgun API Key',
+      'algolia_api_key': 'Algolia API Key',
+      'private_key': 'Private Key',
+      'ssh_key': 'SSH Key'
+    };
+    return displayNames[secretType] || secretType;
+  }
+
+  /**
+   * Get severity level for secret type
+   */
+  static getSecretSeverity(secretType: string): 'high' | 'medium' | 'low' {
+    const highSeverity = [
+      'aws_secret_key',
+      'stripe_secret_key',
+      'github_token',
+      'github_personal_access_token',
+      'private_key',
+      'ssh_key',
+      'database_url'
+    ];
+    const mediumSeverity = [
+      'aws_access_key',
+      'jwt_secret',
+      'api_key',
+      'openai_api_key',
+      'anthropic_api_key',
+      'deepseek_api_key'
+    ];
+    
+    if (highSeverity.includes(secretType)) return 'high';
+    if (mediumSeverity.includes(secretType)) return 'medium';
+    return 'low';
+  }
+
+  /**
    * Send welcome email
    */
   static async sendWelcomeEmail(user: User) {
@@ -117,14 +179,13 @@ export class EmailService {
         <head>
           <meta charset="utf-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Welcome to GitWizard!</title>
+          <title>Welcome to GitWizard</title>
           <style>
             body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; }
             .container { max-width: 600px; margin: 0 auto; padding: 20px; }
             .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 10px; text-align: center; }
             .content { background: white; padding: 30px; border-radius: 10px; margin-top: 20px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
             .btn { display: inline-block; background: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 10px 5px; }
-            .feature { background: #f8fafc; border-radius: 8px; padding: 20px; margin: 15px 0; }
             .footer { text-align: center; margin-top: 30px; color: #6b7280; font-size: 14px; }
           </style>
         </head>
@@ -132,51 +193,44 @@ export class EmailService {
           <div class="container">
             <div class="header">
               <h1>🎉 Welcome to GitWizard!</h1>
-              <p>Your security guardian is now active</p>
+              <p>Your security guardian is ready to protect your repositories</p>
             </div>
             
             <div class="content">
-              <h2>Hello ${user.name}!</h2>
-              <p>Welcome to GitWizard! We're excited to help you keep your repositories secure by automatically detecting and alerting you about exposed secrets and API keys.</p>
+              <h2>Hello ${user.name || 'Developer'}!</h2>
+              <p>Welcome to GitWizard - the intelligent secret detection platform that keeps your repositories secure.</p>
               
-              <h3>🚀 What's Next?</h3>
-              <div class="feature">
-                <h4>1. Connect Your Repository</h4>
-                <p>Add your first repository to start monitoring for secrets.</p>
-                <a href="${process.env.NEXT_PUBLIC_APP_URL}/dashboard" class="btn">Go to Dashboard</a>
-              </div>
+              <h3>🚀 Getting Started</h3>
+              <ol>
+                <li><strong>Connect your first repository</strong> from your dashboard</li>
+                <li><strong>GitWizard will automatically scan</strong> new commits for secrets</li>
+                <li><strong>Receive instant alerts</strong> when potential secrets are detected</li>
+                <li><strong>Take action</strong> to secure your codebase</li>
+              </ol>
               
-              <div class="feature">
-                <h4>2. Configure Alerts</h4>
-                <p>Set up email notifications for instant security alerts.</p>
-                <a href="${process.env.NEXT_PUBLIC_APP_URL}/settings" class="btn">Configure Settings</a>
-              </div>
-              
-              <div class="feature">
-                <h4>3. Explore Features</h4>
-                <p>Discover advanced features like custom patterns and team collaboration.</p>
-                <a href="${process.env.NEXT_PUBLIC_APP_URL}/docs" class="btn">View Documentation</a>
-              </div>
-              
-              <h3>🛡️ What We Monitor</h3>
+              <h3>🛡️ What We Detect</h3>
               <ul>
-                <li>AWS Access Keys & Secret Keys</li>
+                <li>AWS Access & Secret Keys</li>
                 <li>Stripe API Keys</li>
                 <li>GitHub Tokens</li>
                 <li>Database URLs</li>
                 <li>JWT Secrets</li>
-                <li>Private Keys</li>
-                <li>And many more...</li>
+                <li>AI API Keys (OpenAI, Claude, DeepSeek, etc.)</li>
+                <li>And much more...</li>
               </ul>
               
-              <div style="background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 8px; padding: 15px; margin: 20px 0;">
-                <strong>💡 Free Plan Includes:</strong> 1 repository, delayed alerts, basic scanning
+              <div style="text-align: center; margin: 30px 0;">
+                <a href="${process.env.NEXT_PUBLIC_APP_URL}/dashboard" class="btn">Go to Dashboard</a>
+              </div>
+              
+              <div style="background: #fef3c7; border: 1px solid #fde68a; border-radius: 8px; padding: 15px; margin: 20px 0;">
+                <strong>💡 Pro Tip:</strong> Start with a public repository to see GitWizard in action, then add your private repositories.
               </div>
             </div>
             
             <div class="footer">
-              <p>Questions? Contact us at support@gitwizard.com</p>
-              <p><a href="${process.env.NEXT_PUBLIC_APP_URL}/unsubscribe?email=${user.email}">Unsubscribe</a></p>
+              <p>This email was sent by GitWizard - Your security guardian</p>
+              <p><a href="${process.env.NEXT_PUBLIC_APP_URL}/unsubscribe?email=${user.email}">Unsubscribe</a> | <a href="${process.env.NEXT_PUBLIC_APP_URL}/settings">Settings</a></p>
             </div>
           </div>
         </body>
@@ -201,42 +255,5 @@ export class EmailService {
       console.error('Failed to send welcome email:', error);
       throw error;
     }
-  }
-
-  /**
-   * Get display name for secret type
-   */
-  private static getSecretTypeDisplayName(secretType: string): string {
-    const displayNames: Record<string, string> = {
-      'aws_access_key': 'AWS Access Key',
-      'aws_secret_key': 'AWS Secret Key',
-      'stripe_secret_key': 'Stripe Secret Key',
-      'stripe_publishable_key': 'Stripe Publishable Key',
-      'github_token': 'GitHub Token',
-      'github_personal_access_token': 'GitHub Personal Access Token',
-      'database_url': 'Database URL',
-      'jwt_secret': 'JWT Secret',
-      'api_key': 'API Key',
-      'private_key': 'Private Key',
-      'ssh_key': 'SSH Key',
-      'custom': 'Custom Secret'
-    };
-
-    return displayNames[secretType] || secretType;
-  }
-
-  /**
-   * Get severity level for secret type
-   */
-  private static getSecretSeverity(secretType: string): 'high' | 'medium' | 'low' {
-    const highSeverity = ['aws_secret_key', 'stripe_secret_key', 'github_token', 'private_key', 'ssh_key'];
-    const mediumSeverity = ['aws_access_key', 'database_url', 'jwt_secret', 'api_key'];
-    const lowSeverity = ['stripe_publishable_key', 'github_personal_access_token'];
-
-    if (highSeverity.includes(secretType)) return 'high';
-    if (mediumSeverity.includes(secretType)) return 'medium';
-    if (lowSeverity.includes(secretType)) return 'low';
-    
-    return 'medium'; // Default
   }
 } 

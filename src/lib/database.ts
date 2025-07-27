@@ -28,11 +28,16 @@ export const TABLES = {
 } as const;
 
 export class DatabaseService {
-  static async getUserById(userId: string) {
+  static async createUser(userData: {
+    email: string;
+    name: string;
+    image?: string;
+    github_id?: string;
+  }) {
     const { data, error } = await supabaseAdmin
       .from(TABLES.USERS)
-      .select('*')
-      .eq('id', userId)
+      .insert(userData)
+      .select()
       .single();
     if (error) throw error;
     return data;
@@ -44,7 +49,7 @@ export class DatabaseService {
       .select('*')
       .eq('email', email)
       .single();
-    if (error) throw error;
+    if (error && error.code !== 'PGRST116') throw error;
     return data;
   }
 
@@ -61,6 +66,44 @@ export class DatabaseService {
       .single();
     if (error) throw error;
     return data;
+  }
+
+  static async getUsers() {
+    const { data, error } = await supabaseAdmin
+      .from(TABLES.USERS)
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    return data;
+  }
+
+  static async getUserById(userId: string) {
+    const { data, error } = await supabaseAdmin
+      .from(TABLES.USERS)
+      .select('*')
+      .eq('id', userId)
+      .single();
+    if (error) throw error;
+    return data;
+  }
+
+  static async updateUser(userId: string, updates: Record<string, unknown>) {
+    const { data, error } = await supabaseAdmin
+      .from(TABLES.USERS)
+      .update(updates)
+      .eq('id', userId)
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  }
+
+  static async deleteUser(userId: string) {
+    const { error } = await supabaseAdmin
+      .from(TABLES.USERS)
+      .delete()
+      .eq('id', userId);
+    if (error) throw error;
   }
 
   static async getUserRepositories(userId: string) {
@@ -90,7 +133,16 @@ export class DatabaseService {
     return data;
   }
 
-  static async updateRepository(repoId: string, updates: Partial<{ webhook_id: number; is_active: boolean; }>) {
+  static async getRepositories() {
+    const { data, error } = await supabaseAdmin
+      .from(TABLES.REPOSITORIES)
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    return data;
+  }
+
+  static async updateRepository(repoId: string, updates: Record<string, unknown>) {
     const { data, error } = await supabaseAdmin
       .from(TABLES.REPOSITORIES)
       .update(updates)
@@ -241,8 +293,7 @@ export class DatabaseService {
     const { count: secretsCount } = await supabaseAdmin
       .from(TABLES.SECRET_SCANS)
       .select('*', { count: 'exact', head: true })
-      .in('repository_id', repoIds)
-      .not('secret_value', 'is', null);
+      .in('repository_id', repoIds);
 
     // Count resolved secrets
     const { count: resolvedCount } = await supabaseAdmin
@@ -251,14 +302,42 @@ export class DatabaseService {
       .in('repository_id', repoIds)
       .eq('is_resolved', true);
 
+    // Count active alerts
+    const { count: alertsCount } = await supabaseAdmin
+      .from(TABLES.ALERTS)
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', userId)
+      .eq('status', 'pending');
+
+    // Calculate scan success rate (simplified - assume 95% if no scans, otherwise based on resolved vs total)
+    const scanSuccessRate = scanCount === 0 ? 95 : Math.round(((resolvedCount || 0) / (secretsCount || 1)) * 100);
+
     return {
       totalRepositories: repoCount || 0,
       totalScans: scanCount || 0,
       secretsFound: secretsCount || 0,
       resolvedSecrets: resolvedCount || 0,
-      activeAlerts: 0,
-      scanSuccessRate: scanCount ? ((scanCount - (secretsCount || 0)) / scanCount) * 100 : 100
+      activeAlerts: alertsCount || 0,
+      scanSuccessRate: Math.max(0, Math.min(100, scanSuccessRate))
     };
+  }
+
+  static async storeUserToken(userId: string, accessToken: string) {
+    const { error } = await supabaseAdmin
+      .from(TABLES.USERS)
+      .update({ github_access_token: accessToken })
+      .eq('id', userId);
+    if (error) throw error;
+  }
+
+  static async getUserToken(userId: string): Promise<string | null> {
+    const { data, error } = await supabaseAdmin
+      .from(TABLES.USERS)
+      .select('github_access_token')
+      .eq('id', userId)
+      .single();
+    if (error) throw error;
+    return data?.github_access_token || null;
   }
 }
 

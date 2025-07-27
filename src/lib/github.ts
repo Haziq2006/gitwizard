@@ -58,18 +58,16 @@ export class GitHubService {
   }
 
   /**
-   * Get commit files
+   * Get files changed in a commit
    */
   async getCommitFiles(owner: string, repo: string, commitSha: string) {
     const response = await fetch(
       `https://api.github.com/repos/${owner}/${repo}/commits/${commitSha}`,
-      {
-        headers: this.getHeaders()
-      }
+      { headers: this.getHeaders() }
     );
 
     if (!response.ok) {
-      throw new Error(`GitHub API error: ${response.statusText}`);
+      throw new Error(`Failed to get commit: ${response.statusText}`);
     }
 
     const commit = await response.json();
@@ -77,17 +75,26 @@ export class GitHubService {
   }
 
   /**
-   * Get file content
+   * Get file content from a specific commit
    */
-  async getFileContent(owner: string, repo: string, path: string, ref?: string): Promise<string> {
-    const content = await this.getRepositoryContent(owner, repo, path, ref);
-    
-    if (content.type !== 'file') {
-      throw new Error('Path is not a file');
+  async getFileContent(owner: string, repo: string, filePath: string, commitSha: string): Promise<string> {
+    const response = await fetch(
+      `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}?ref=${commitSha}`,
+      { headers: this.getHeaders() }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Failed to get file content: ${response.statusText}`);
     }
 
-    // Decode base64 content
-    return Buffer.from(content.content, 'base64').toString('utf-8');
+    const file = await response.json();
+    
+    // Handle base64 encoded content
+    if (file.content && file.encoding === 'base64') {
+      return Buffer.from(file.content, 'base64').toString('utf-8');
+    }
+    
+    return file.content || '';
   }
 
   /**
