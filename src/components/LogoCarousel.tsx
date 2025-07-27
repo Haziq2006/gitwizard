@@ -108,22 +108,24 @@ export default function LogoCarousel() {
         
         <div className="relative overflow-hidden">
           {/* Main carousel */}
-          <div className="flex justify-center items-center space-x-12">
+          <div className="flex justify-center items-center space-x-8">
             {logos.map((logo, index) => (
               <div
                 key={logo.name}
-                className={`flex flex-col items-center transition-all duration-500 ${
+                className={`flex flex-col items-center transition-all duration-700 ${
                   index === currentIndex
-                    ? 'opacity-100 scale-110'
+                    ? 'opacity-100 scale-125'
                     : index === (currentIndex + 1) % logos.length || index === (currentIndex - 1 + logos.length) % logos.length
-                    ? 'opacity-60 scale-90'
-                    : 'opacity-30 scale-75'
+                    ? 'opacity-70 scale-95'
+                    : 'opacity-40 scale-80'
                 }`}
               >
-                <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center mb-3 shadow-sm">
-                  <div className="text-2xl font-bold text-gray-700">
-                    {logo.name}
-                  </div>
+                <div className="w-16 h-16 bg-white rounded-lg flex items-center justify-center mb-3 shadow-sm border border-gray-200">
+                  <img 
+                    src={logo.logo} 
+                    alt={logo.alt}
+                    className="w-10 h-10 object-contain"
+                  />
                 </div>
                 <span className="text-xs text-gray-600 font-medium">
                   {logo.category}
@@ -149,13 +151,15 @@ export default function LogoCarousel() {
         
         {/* Static grid for mobile */}
         <div className="hidden md:block mt-8">
-          <div className="grid grid-cols-5 gap-8">
-            {logos.slice(0, 10).map((logo) => (
+          <div className="grid grid-cols-6 gap-6">
+            {logos.map((logo) => (
               <div key={logo.name} className="flex flex-col items-center">
-                <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center mb-2">
-                  <div className="text-lg font-bold text-gray-700">
-                    {logo.name}
-                  </div>
+                <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center mb-2 shadow-sm border border-gray-200">
+                  <img 
+                    src={logo.logo} 
+                    alt={logo.alt}
+                    className="w-8 h-8 object-contain"
+                  />
                 </div>
                 <span className="text-xs text-gray-500 text-center">
                   {logo.category}
