@@ -87,6 +87,66 @@ export class SecretScanner {
       examples: ['hf_1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz']
     },
     {
+      type: SecretType.COHERE_API_KEY,
+      pattern: /sk-[0-9a-zA-Z]{48}/g,
+      description: 'Cohere API Key',
+      examples: ['sk-1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz']
+    },
+    {
+      type: SecretType.REPLICATE_API_KEY,
+      pattern: /r8_[0-9a-zA-Z]{37}/g,
+      description: 'Replicate API Key',
+      examples: ['r8_1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz']
+    },
+    {
+      type: SecretType.TOGETHER_AI_API_KEY,
+      pattern: /sk-[0-9a-zA-Z]{48}/g,
+      description: 'Together AI API Key',
+      examples: ['sk-1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz']
+    },
+    {
+      type: SecretType.AZURE_OPENAI_API_KEY,
+      pattern: /sk-[0-9a-zA-Z]{32}/g,
+      description: 'Azure OpenAI API Key',
+      examples: ['sk-1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz']
+    },
+    {
+      type: SecretType.GOOGLE_CLOUD_API_KEY,
+      pattern: /AIza[0-9A-Za-z-_]{35}/g,
+      description: 'Google Cloud API Key',
+      examples: ['AIzaSyC1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz']
+    },
+    {
+      type: SecretType.FIREBASE_API_KEY,
+      pattern: /AIza[0-9A-Za-z-_]{35}/g,
+      description: 'Firebase API Key',
+      examples: ['AIzaSyC1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz']
+    },
+    {
+      type: SecretType.SENDGRID_API_KEY,
+      pattern: /SG\.[0-9a-zA-Z]{22}\.[0-9a-zA-Z]{43}/g,
+      description: 'SendGrid API Key',
+      examples: ['SG.1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz']
+    },
+    {
+      type: SecretType.TWILIO_API_KEY,
+      pattern: /SK[0-9a-f]{32}/g,
+      description: 'Twilio API Key',
+      examples: ['SK1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz']
+    },
+    {
+      type: SecretType.MAILGUN_API_KEY,
+      pattern: /key-[0-9a-f]{32}/g,
+      description: 'Mailgun API Key',
+      examples: ['key-1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz']
+    },
+    {
+      type: SecretType.ALGOLIA_API_KEY,
+      pattern: /[0-9a-f]{32}/g,
+      description: 'Algolia API Key',
+      examples: ['1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz']
+    },
+    {
       type: SecretType.PRIVATE_KEY,
       pattern: /-----BEGIN PRIVATE KEY-----[\s\S]*?-----END PRIVATE KEY-----/g,
       description: 'Private Key (PEM format)',

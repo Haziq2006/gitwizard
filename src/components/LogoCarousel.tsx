@@ -40,6 +40,54 @@ const logos = [
     category: 'AI'
   },
   {
+    name: 'Cohere',
+    logo: '/logos/cohere.svg',
+    alt: 'Cohere AI',
+    category: 'AI'
+  },
+  {
+    name: 'DeepSeek',
+    logo: '/logos/deepseek.svg',
+    alt: 'DeepSeek AI',
+    category: 'AI'
+  },
+  {
+    name: 'Azure',
+    logo: '/logos/azure.svg',
+    alt: 'Microsoft Azure',
+    category: 'Cloud Provider'
+  },
+  {
+    name: 'Google Cloud',
+    logo: '/logos/google-cloud.svg',
+    alt: 'Google Cloud Platform',
+    category: 'Cloud Provider'
+  },
+  {
+    name: 'Firebase',
+    logo: '/logos/firebase.svg',
+    alt: 'Firebase',
+    category: 'Backend'
+  },
+  {
+    name: 'SendGrid',
+    logo: '/logos/sendgrid.svg',
+    alt: 'SendGrid Email',
+    category: 'Communication'
+  },
+  {
+    name: 'Twilio',
+    logo: '/logos/twilio.svg',
+    alt: 'Twilio Communication',
+    category: 'Communication'
+  },
+  {
+    name: 'Mailgun',
+    logo: '/logos/mailgun.svg',
+    alt: 'Mailgun Email',
+    category: 'Communication'
+  },
+  {
     name: 'MongoDB',
     logo: '/logos/mongodb.svg',
     alt: 'MongoDB Database',
