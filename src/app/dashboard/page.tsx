@@ -109,20 +109,53 @@ export default function DashboardPage() {
       
       // Fetch dashboard stats
       const statsResponse = await fetch('/api/dashboard/stats');
-      const statsData = await statsResponse.json();
-      setStats(statsData);
+      if (!statsResponse.ok) {
+        console.error('Failed to fetch stats:', statsResponse.status);
+        setStats({
+          totalRepositories: 0,
+          totalScans: 0,
+          secretsFound: 0,
+          resolvedSecrets: 0,
+          activeAlerts: 0,
+          scanSuccessRate: 0
+        });
+      } else {
+        const statsData = await statsResponse.json();
+        setStats(statsData);
+      }
 
       // Fetch repositories
       const reposResponse = await fetch('/api/repositories');
-      const reposData = await reposResponse.json();
-      setRepositories(Array.isArray(reposData) ? reposData : []);
+      if (!reposResponse.ok) {
+        console.error('Failed to fetch repositories:', reposResponse.status);
+        setRepositories([]);
+      } else {
+        const reposData = await reposResponse.json();
+        setRepositories(Array.isArray(reposData) ? reposData : []);
+      }
 
       // Fetch recent scans
       const scansResponse = await fetch('/api/scans/recent');
-      const scansData = await scansResponse.json();
-      setRecentScans(scansData);
+      if (!scansResponse.ok) {
+        console.error('Failed to fetch recent scans:', scansResponse.status);
+        setRecentScans([]);
+      } else {
+        const scansData = await scansResponse.json();
+        setRecentScans(Array.isArray(scansData) ? scansData : []);
+      }
     } catch (error: unknown) {
       console.error('Error fetching dashboard data:', error instanceof Error ? error.message : error);
+      // Set default values on error
+      setStats({
+        totalRepositories: 0,
+        totalScans: 0,
+        secretsFound: 0,
+        resolvedSecrets: 0,
+        activeAlerts: 0,
+        scanSuccessRate: 0
+      });
+      setRepositories([]);
+      setRecentScans([]);
     } finally {
       setLoading(false);
     }
@@ -368,7 +401,7 @@ export default function DashboardPage() {
                 </div>
                 <div className="ml-4">
                   <p className="text-sm font-medium text-gray-600">Success Rate</p>
-                  <p className="text-2xl font-bold text-gray-900">{stats.scanSuccessRate.toFixed(1)}%</p>
+                  <p className="text-2xl font-bold text-gray-900">{stats.scanSuccessRate ? stats.scanSuccessRate.toFixed(1) : '0.0'}%</p>
                 </div>
               </div>
             </div>
