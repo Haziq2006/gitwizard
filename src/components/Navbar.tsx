@@ -40,7 +40,9 @@ export default function Navbar() {
                   className="w-8 h-8"
                 />
               </div>
-              <span className="text-xl font-bold text-gray-900">GitWizard</span>
+              <span className="text-xl font-bold text-gray-900">
+                <span className="text-blue-600">Git</span>Wizard
+              </span>
             </Link>
           </div>
 
