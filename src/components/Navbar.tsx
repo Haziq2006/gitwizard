@@ -3,12 +3,10 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useSession, signIn, signOut } from 'next-auth/react';
-import Image from 'next/image';
 
 export default function Navbar() {
   const { data: session } = useSession();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [logoError, setLogoError] = useState(false);
 
   const navItems = [
     { name: 'Home', href: '#home' },
@@ -31,24 +29,7 @@ export default function Navbar() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <Link href="/" className="flex items-center space-x-2">
-              <div className="w-8 h-8 relative flex items-center justify-center">
-                {!logoError ? (
-                  <Image
-                    src="/favicon.svg"
-                    alt="GitWizard"
-                    width={32}
-                    height={32}
-                    className="w-8 h-8"
-                    onError={() => setLogoError(true)}
-                    priority
-                  />
-                ) : (
-                  <div className="w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center">
-                    <span className="text-white text-sm font-bold">G</span>
-                  </div>
-                )}
-              </div>
+            <Link href="/" className="flex items-center">
               <span className="text-xl font-bold text-gray-900">
                 <span className="text-blue-600">Git</span>Wizard
               </span>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 
 const logos = [
   {
@@ -133,6 +134,7 @@ const logos = [
 
 export default function LogoCarousel() {
   const [scrollPosition, setScrollPosition] = useState(0);
+  const [logoErrors, setLogoErrors] = useState<{[key: string]: boolean}>({});
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -146,6 +148,10 @@ export default function LogoCarousel() {
 
     return () => clearInterval(interval);
   }, []);
+
+  const handleImageError = (logoName: string) => {
+    setLogoErrors(prev => ({ ...prev, [logoName]: true }));
+  };
 
   return (
     <div className="py-12 bg-white">
@@ -175,13 +181,22 @@ export default function LogoCarousel() {
                 className="flex flex-col items-center min-w-[80px]"
               >
                 <div className="w-16 h-16 bg-white rounded-lg flex items-center justify-center mb-3 shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-                                           <img
-                           src={logo.logo}
-                           alt={logo.alt}
-                           className="w-10 h-10 object-contain"
-                           width={40}
-                           height={40}
-                         />
+                  {!logoErrors[logo.name] ? (
+                    <Image
+                      src={logo.logo}
+                      alt={logo.alt}
+                      width={40}
+                      height={40}
+                      className="w-10 h-10 object-contain"
+                      onError={() => handleImageError(logo.name)}
+                    />
+                  ) : (
+                    <div className="w-10 h-10 bg-gray-100 rounded flex items-center justify-center">
+                      <span className="text-xs font-medium text-gray-500">
+                        {logo.name.charAt(0)}
+                      </span>
+                    </div>
+                  )}
                 </div>
                 <span className="text-xs text-gray-600 font-medium text-center">
                   {logo.category}
