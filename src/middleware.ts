@@ -13,9 +13,10 @@ export default withAuth(
   {
     callbacks: {
       authorized: ({ token, req }) => {
-        // Allow access to public routes
+        // Allow access to public routes and OAuth callback routes
         if (req.nextUrl.pathname === '/' || 
             req.nextUrl.pathname === '/auth/signin' ||
+            req.nextUrl.pathname.startsWith('/api/auth') ||
             req.nextUrl.pathname.startsWith('/api/')) {
           return true;
         }

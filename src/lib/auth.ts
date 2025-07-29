@@ -94,6 +94,10 @@ export const authOptions: NextAuthOptions = {
       }
       
       return session;
+    },
+    async redirect({ url, baseUrl }) {
+      // Always redirect to dashboard after successful authentication
+      return `${baseUrl}/dashboard`;
     }
   },
   pages: {

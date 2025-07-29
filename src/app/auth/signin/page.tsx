@@ -12,13 +12,15 @@ export default function SignInPage() {
   useEffect(() => {
     if (status === 'loading') return;
     
+    // If user is already authenticated, redirect to dashboard
     if (session) {
       router.push('/dashboard');
     }
   }, [session, status, router]);
 
   const handleGitHubSignIn = () => {
-    signIn('github', { callbackUrl: '/dashboard' });
+    // NextAuth will handle the redirect to dashboard automatically
+    signIn('github');
   };
 
   if (status === 'loading') {
