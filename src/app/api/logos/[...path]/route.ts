@@ -4,10 +4,11 @@ import path from 'path';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { path: string[] } }
+  { params }: { params: Promise<{ path: string[] }> }
 ) {
   try {
-    const logoPath = params.path.join('/');
+    const resolvedParams = await params;
+    const logoPath = resolvedParams.path.join('/');
     const filePath = path.join(process.cwd(), 'public', 'logos', logoPath);
     
     // Check if file exists
