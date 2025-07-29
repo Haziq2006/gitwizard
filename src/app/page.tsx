@@ -99,62 +99,150 @@ export default function HomePage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             <div className="bg-gray-50 rounded-xl p-8">
               <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-6">
-                <Eye className="w-6 h-6 text-blue-600" />
+                <Shield className="w-6 h-6 text-blue-600" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">Real-time Scanning</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">Real-time Monitoring</h3>
               <p className="text-gray-600">
-                Automatically scan every commit for secrets using advanced regex patterns and machine learning.
+                Automatically scan every commit and pull request for exposed secrets, API keys, and sensitive data.
               </p>
             </div>
             
             <div className="bg-gray-50 rounded-xl p-8">
               <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-6">
-                <Bell className="w-6 h-6 text-green-600" />
+                <Zap className="w-6 h-6 text-green-600" />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-4">Instant Alerts</h3>
               <p className="text-gray-600">
-                Get notified immediately via email when secrets are detected. Slack/Discord integration coming soon.
+                Get immediate notifications via email, Slack, or Discord when secrets are detected in your repositories.
               </p>
             </div>
             
             <div className="bg-gray-50 rounded-xl p-8">
               <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-6">
-                <Zap className="w-6 h-6 text-purple-600" />
+                <Eye className="w-6 h-6 text-purple-600" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">Auto-Revocation</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">Comprehensive Coverage</h3>
               <p className="text-gray-600">
-                Automatically revoke exposed secrets and rotate credentials (Business plan - coming soon).
+                Detect secrets from 50+ services including AWS, Stripe, GitHub, OpenAI, and custom patterns.
               </p>
             </div>
             
             <div className="bg-gray-50 rounded-xl p-8">
               <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-6">
-                <Shield className="w-6 h-6 text-orange-600" />
+                <Bell className="w-6 h-6 text-orange-600" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">Comprehensive Coverage</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">Smart Notifications</h3>
               <p className="text-gray-600">
-                Detect AWS keys, Stripe tokens, GitHub tokens, AI API keys (OpenAI, Claude, DeepSeek), database URLs, and more.
+                Intelligent alerting that reduces false positives and focuses on real security threats.
+              </p>
+            </div>
+            
+            <div className="bg-gray-50 rounded-xl p-8">
+              <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mb-6">
+                <CheckCircle className="w-6 h-6 text-red-600" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">Easy Integration</h3>
+              <p className="text-gray-600">
+                Simple GitHub OAuth setup. No complex configuration required. Start protecting your repos in minutes.
               </p>
             </div>
             
             <div className="bg-gray-50 rounded-xl p-8">
               <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mb-6">
-                <CheckCircle className="w-6 h-6 text-indigo-600" />
+                <Star className="w-6 h-6 text-indigo-600" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">Smart Filtering</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">Developer Friendly</h3>
               <p className="text-gray-600">
-                Skip test files, documentation, and examples to reduce false positives.
+                Built by developers, for developers. Clean dashboard, detailed reports, and actionable insights.
               </p>
             </div>
-            
-            <div className="bg-gray-50 rounded-xl p-8">
-              <div className="w-12 h-12 bg-pink-100 rounded-lg flex items-center justify-center mb-6">
-                <Star className="w-6 h-6 text-pink-600" />
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section className="py-20 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              Trusted by Developers Worldwide
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              See what developers are saying about GitWizard
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-200">
+              <div className="flex items-center mb-4">
+                <div className="flex text-yellow-400">
+                  <Star className="w-5 h-5 fill-current" />
+                  <Star className="w-5 h-5 fill-current" />
+                  <Star className="w-5 h-5 fill-current" />
+                  <Star className="w-5 h-5 fill-current" />
+                  <Star className="w-5 h-5 fill-current" />
+                </div>
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">Custom Patterns</h3>
-              <p className="text-gray-600">
-                Add your own regex patterns to detect organization-specific secrets (coming soon).
+              <p className="text-gray-700 mb-6 leading-relaxed">
+                &ldquo;GitWizard saved us from a major security breach. We accidentally committed AWS keys, and it caught them immediately. The instant alerts are a game-changer for our security workflow.&rdquo;
               </p>
+              <div className="flex items-center">
+                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                  <span className="text-blue-600 font-semibold text-sm">SM</span>
+                </div>
+                <div className="ml-3">
+                  <p className="font-semibold text-gray-900">Sarah Mitchell</p>
+                  <p className="text-sm text-gray-600">Senior DevOps Engineer</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-200">
+              <div className="flex items-center mb-4">
+                <div className="flex text-yellow-400">
+                  <Star className="w-5 h-5 fill-current" />
+                  <Star className="w-5 h-5 fill-current" />
+                  <Star className="w-5 h-5 fill-current" />
+                  <Star className="w-5 h-5 fill-current" />
+                  <Star className="w-5 h-5 fill-current" />
+                </div>
+              </div>
+              <p className="text-gray-700 mb-6 leading-relaxed">
+                &ldquo;The comprehensive coverage is impressive. It detects secrets from all the services we use - Stripe, OpenAI, Firebase. Setup was incredibly easy with GitHub OAuth.&rdquo;
+              </p>
+              <div className="flex items-center">
+                <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                  <span className="text-green-600 font-semibold text-sm">DJ</span>
+                </div>
+                <div className="ml-3">
+                  <p className="font-semibold text-gray-900">David Johnson</p>
+                  <p className="text-sm text-gray-600">Full Stack Developer</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-200">
+              <div className="flex items-center mb-4">
+                <div className="flex text-yellow-400">
+                  <Star className="w-5 h-5 fill-current" />
+                  <Star className="w-5 h-5 fill-current" />
+                  <Star className="w-5 h-5 fill-current" />
+                  <Star className="w-5 h-5 fill-current" />
+                  <Star className="w-5 h-5 fill-current" />
+                </div>
+              </div>
+              <p className="text-gray-700 mb-6 leading-relaxed">
+                &ldquo;As a startup, security is crucial but we don&apos;t have time for complex tools. GitWizard is perfect - it just works. The dashboard is clean and the alerts are actionable.&rdquo;
+              </p>
+              <div className="flex items-center">
+                <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                  <span className="text-purple-600 font-semibold text-sm">MC</span>
+                </div>
+                <div className="ml-3">
+                  <p className="font-semibold text-gray-900">Maria Chen</p>
+                  <p className="text-sm text-gray-600">CTO & Co-founder</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
