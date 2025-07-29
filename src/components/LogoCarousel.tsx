@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Image from 'next/image';
 
 const logos = [
   {
@@ -182,7 +181,7 @@ export default function LogoCarousel() {
               >
                 <div className="w-16 h-16 bg-white rounded-lg flex items-center justify-center mb-3 shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
                   {!logoErrors[logo.name] ? (
-                    <Image
+                    <img
                       src={logo.logo}
                       alt={logo.alt}
                       width={40}
