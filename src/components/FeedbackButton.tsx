@@ -1,9 +1,13 @@
 'use client';
 
 import { MessageSquare } from 'lucide-react';
+import { trackFeedbackClick } from '@/lib/analytics';
 
 export default function FeedbackButton() {
   const handleClick = () => {
+    // Track feedback button click
+    trackFeedbackClick();
+    
     // Get the Tally form URL from environment variable or use a default
     const tallyFormUrl = process.env.NEXT_PUBLIC_TALLY_FORM_URL || 'https://tally.so/r/your-form-id';
     

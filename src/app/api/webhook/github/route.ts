@@ -3,6 +3,7 @@ import { GitHubService } from '@/lib/github';
 import { DatabaseService, supabaseAdmin } from '@/lib/database';
 import { EmailService } from '@/lib/email';
 import { TABLES } from '@/lib/database';
+import { trackEvent, AnalyticsEvents } from '@/lib/analytics';
 
 export async function POST(request: NextRequest) {
   try {
@@ -71,6 +72,13 @@ export async function POST(request: NextRequest) {
 
         // Send alerts for each secret found
         for (const secret of secrets) {
+          // Track secret detection
+          trackEvent(AnalyticsEvents.SECRET_DETECTED, {
+            secret_type: secret.secret_type,
+            repository: payload.repository.full_name,
+            commit_sha: commit.id.substring(0, 8)
+          });
+          
           // Create alert record
           await DatabaseService.addAlert({
             user_id: user.id,
@@ -89,11 +97,25 @@ export async function POST(request: NextRequest) {
               'sent',
               new Date().toISOString()
             );
+            
+            // Track successful alert
+            trackEvent(AnalyticsEvents.ALERT_VIEW, {
+              secret_type: secret.secret_type,
+              repository: payload.repository.full_name,
+              alert_type: 'email'
+            });
           } catch (error) {
             console.error('Failed to send email alert:', error);
             
             // Update alert status to failed
             await DatabaseService.updateAlertStatus(secret.id, 'failed');
+            
+            // Track alert failure
+            trackEvent(AnalyticsEvents.ERROR_OCCURRED, {
+              type: 'alert_failure',
+              secret_type: secret.secret_type,
+              repository: payload.repository.full_name
+            });
           }
         }
       } catch (error) {

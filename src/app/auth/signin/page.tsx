@@ -4,6 +4,7 @@ import { signIn, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { Github, Shield, Eye, Bell, Zap } from 'lucide-react';
+import { trackSignIn } from '@/lib/analytics';
 
 export default function SignInPage() {
   const { data: session, status } = useSession();
@@ -19,6 +20,8 @@ export default function SignInPage() {
   }, [session, status, router]);
 
   const handleGitHubSignIn = () => {
+    // Track sign-in attempt
+    trackSignIn();
     // NextAuth will handle the redirect to dashboard automatically
     signIn('github');
   };

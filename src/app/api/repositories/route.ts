@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { DatabaseService } from '@/lib/database';
 import { GitHubService } from '@/lib/github';
+import { trackEvent, AnalyticsEvents } from '@/lib/analytics';
 
 export async function GET() {
   try {
@@ -98,61 +99,63 @@ export async function POST(req: Request) {
     }
 
     // Webhook setup
-    const token = session.accessToken;
-    if (!token) {
-      // Clean up the repo if we can't proceed
-      await DatabaseService.updateRepository(repo.id, { is_active: false });
-      return NextResponse.json(
-        { error: 'No GitHub access token found' },
-        { status: 401 }
-      );
-    }
-
-    // Verify webhook URL is valid
-    const webhookUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/webhook/github`;
-    if (!webhookUrl.startsWith('https://')) {
-      // Clean up the repo if we can't proceed
-      await DatabaseService.updateRepository(repo.id, { is_active: false });
-      return NextResponse.json(
-        { error: 'Webhook URL must be HTTPS for production' },
-        { status: 400 }
-      );
-    }
-
-    const [owner, repoName] = full_name.split('/');
-    
     try {
-      // Use the GitHub service with conflict resolution
+      const token = await DatabaseService.getUserToken(userId);
+      if (!token) {
+        throw new Error('No GitHub access token found');
+      }
+
       const githubService = new GitHubService(token);
-      const webhookData = await githubService.createWebhookWithConflictResolution(
-        owner, 
-        repoName, 
-        webhookUrl
-      );
+      const [owner, repoName] = full_name.split('/');
+      const webhookUrl = `${process.env.NEXTAUTH_URL}/api/webhook/github`;
+      
+      const webhookData = await githubService.createWebhookWithConflictResolution(owner, repoName, webhookUrl);
       
       // Update repository with webhook ID
       await DatabaseService.updateRepository(repo.id, { 
-        webhook_id: webhookData.id,
-        is_active: true
+        webhook_id: webhookData.id, 
+        is_active: true 
       });
-
+      
+      // Track successful repository addition
+      trackEvent(AnalyticsEvents.REPOSITORY_ADD, { 
+        repository: full_name,
+        plan: plan,
+        is_private: !!isPrivate
+      });
+      
+      // Track webhook creation
+      trackEvent(AnalyticsEvents.WEBHOOK_CREATE, { 
+        repository: full_name 
+      });
+      
       return NextResponse.json({ 
-        ...repo, 
-        webhook_id: webhookData.id 
+        message: 'Repository connected successfully',
+        repository: {
+          ...repo,
+          webhook_id: webhookData.id,
+          is_active: true
+        }
       });
-
     } catch (error) {
-      console.error('Webhook creation failed:', error);
+      console.error('Webhook setup failed:', error);
+      
+      // Track webhook error
+      trackEvent(AnalyticsEvents.WEBHOOK_ERROR, { 
+        repository: full_name,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+      
+      // Clean up the repository entry since webhook failed
+      await DatabaseService.deleteRepository(repo.id);
+      
       return NextResponse.json(
-        { 
-          error: 'Failed to create webhook',
-          details: typeof error === 'object' && error !== null && 'message' in error ? String((error as { message: unknown }).message) : String(error)
-        },
+        { error: 'Failed to set up webhook. Please try again.' },
         { status: 500 }
       );
     }
   } catch (error) {
-    console.error('Repository creation error:', error);
+    console.error('Error adding repository:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -284,6 +287,11 @@ export async function DELETE(request: NextRequest) {
           const [owner, repoName] = repository.full_name.split('/');
           const githubService = new GitHubService(token);
           await githubService.deleteWebhook(owner, repoName, repository.webhook_id);
+          
+          // Track webhook deletion
+          trackEvent(AnalyticsEvents.WEBHOOK_DELETE, { 
+            repository: repository.full_name 
+          });
         }
       } catch (error) {
         console.error('Failed to delete webhook from GitHub:', error);
@@ -293,6 +301,12 @@ export async function DELETE(request: NextRequest) {
 
     // Delete the repository from database
     await DatabaseService.deleteRepository(repoId);
+    
+    // Track repository removal
+    trackEvent(AnalyticsEvents.REPOSITORY_REMOVE, { 
+      repository: repository.full_name,
+      had_webhook: !!repository.webhook_id
+    });
 
     return NextResponse.json({ message: 'Repository deleted successfully' });
   } catch (error) {

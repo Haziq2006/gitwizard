@@ -4,6 +4,7 @@ import FeedbackButton from '@/components/FeedbackButton';
 import LogoCarousel from '@/components/LogoCarousel';
 import Navbar from '@/components/Navbar';
 import FAQ from '@/components/FAQ';
+import { trackHeroCTA, trackDemoClick, trackPricingClick } from '@/lib/analytics';
 
 export default function HomePage() {
   return (
@@ -31,12 +32,19 @@ export default function HomePage() {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Link href="/auth/signin" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-colors flex items-center">
+              <Link 
+                href="/auth/signin" 
+                onClick={trackHeroCTA}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-colors flex items-center"
+              >
                 <Github className="w-5 h-5 mr-2" />
                 Connect with GitHub
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Link>
-              <button className="text-blue-600 hover:text-blue-700 font-semibold text-lg transition-colors">
+              <button 
+                onClick={trackDemoClick}
+                className="text-blue-600 hover:text-blue-700 font-semibold text-lg transition-colors"
+              >
                 Watch Demo →
               </button>
             </div>
@@ -288,7 +296,11 @@ export default function HomePage() {
                 </li>
               </ul>
               
-              <Link href="/auth/signin" className="w-full bg-gray-100 hover:bg-gray-200 text-gray-900 py-3 px-4 rounded-lg font-medium transition-colors text-center block">
+              <Link 
+                href="/auth/signin" 
+                onClick={() => trackPricingClick('free')}
+                className="w-full bg-gray-100 hover:bg-gray-200 text-gray-900 py-3 px-4 rounded-lg font-medium transition-colors text-center block"
+              >
                 Get Started Free
               </Link>
             </div>
@@ -334,7 +346,11 @@ export default function HomePage() {
                 </li>
               </ul>
               
-              <Link href="/auth/signin" className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-medium transition-colors text-center block">
+              <Link 
+                href="/auth/signin" 
+                onClick={() => trackPricingClick('pro')}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-medium transition-colors text-center block"
+              >
                 Start Pro Trial
               </Link>
             </div>
@@ -374,7 +390,11 @@ export default function HomePage() {
                 </li>
               </ul>
               
-              <Link href="/auth/signin" className="w-full bg-gray-100 hover:bg-gray-200 text-gray-900 py-3 px-4 rounded-lg font-medium transition-colors text-center block">
+              <Link 
+                href="/auth/signin" 
+                onClick={() => trackPricingClick('business')}
+                className="w-full bg-gray-100 hover:bg-gray-200 text-gray-900 py-3 px-4 rounded-lg font-medium transition-colors text-center block"
+              >
                 Contact Sales
               </Link>
             </div>

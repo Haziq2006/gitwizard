@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { trackEvent, AnalyticsEvents } from '@/lib/analytics';
 
 interface FAQItem {
   question: string;
@@ -54,11 +55,19 @@ export default function FAQ() {
   const [openItems, setOpenItems] = useState<number[]>([]);
 
   const toggleItem = (index: number) => {
+    const isOpening = !openItems.includes(index);
     setOpenItems(prev => 
       prev.includes(index) 
         ? prev.filter(i => i !== index)
         : [...prev, index]
     );
+    
+    // Track FAQ toggle
+    if (isOpening) {
+      trackEvent(AnalyticsEvents.FAQ_TOGGLE, { 
+        question: faqData[index].question.substring(0, 50) 
+      });
+    }
   };
 
   return (

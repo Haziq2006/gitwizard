@@ -16,6 +16,7 @@ import {
   Clock,
   Loader2
 } from 'lucide-react';
+import { trackDashboardView, trackRepositoryAdd } from '@/lib/analytics';
 
 interface DashboardStats {
   totalRepositories: number;
@@ -99,6 +100,10 @@ export default function DashboardPage() {
       router.push('/auth/signin');
       return;
     }
+    
+    // Track dashboard view
+    trackDashboardView();
+    
     fetchDashboardData();
     fetchPlan();
   }, [session, status, router]);
@@ -203,6 +208,7 @@ export default function DashboardPage() {
       }
       setShowRepoModal(false);
       fetchDashboardData();
+      trackRepositoryAdd(); // Track repository add
     } catch (err: unknown) {
       alert(err instanceof Error ? err.message : 'Failed to connect repository');
     } finally {
