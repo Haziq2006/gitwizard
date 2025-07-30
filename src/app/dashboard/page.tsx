@@ -208,7 +208,7 @@ export default function DashboardPage() {
       }
       setShowRepoModal(false);
       fetchDashboardData();
-      trackRepositoryAdd(); // Track repository add
+      trackRepositoryAdd(repo.full_name); // Track repository add with repo name
     } catch (err: unknown) {
       alert(err instanceof Error ? err.message : 'Failed to connect repository');
     } finally {
