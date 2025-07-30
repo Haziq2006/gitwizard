@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
         for (const secret of secrets) {
           // Track secret detection
           trackEvent(AnalyticsEvents.SECRET_DETECTED, {
-            secret_type: secret.secret_type,
+            secret_type: secret.secretType,
             repository: payload.repository.full_name,
             commit_sha: commit.id.substring(0, 8)
           });
@@ -100,7 +100,7 @@ export async function POST(request: NextRequest) {
             
             // Track successful alert
             trackEvent(AnalyticsEvents.ALERT_VIEW, {
-              secret_type: secret.secret_type,
+              secret_type: secret.secretType,
               repository: payload.repository.full_name,
               alert_type: 'email'
             });
@@ -113,7 +113,7 @@ export async function POST(request: NextRequest) {
             // Track alert failure
             trackEvent(AnalyticsEvents.ERROR_OCCURRED, {
               type: 'alert_failure',
-              secret_type: secret.secret_type,
+              secret_type: secret.secretType,
               repository: payload.repository.full_name
             });
           }
