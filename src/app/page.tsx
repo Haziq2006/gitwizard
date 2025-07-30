@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import { Shield, Zap, Eye, Bell, CheckCircle, Star, Github, ArrowRight } from 'lucide-react';
 import FeedbackButton from '@/components/FeedbackButton';
