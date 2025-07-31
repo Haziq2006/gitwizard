@@ -58,3 +58,17 @@
     text-wrap: balance;
   }
 }
+
+/* Logo carousel animation */
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-2400px); /* Adjust based on logo count * 120px */
+  }
+}
+
+.animate-scroll {
+  animation: scroll 60s linear infinite;
+}

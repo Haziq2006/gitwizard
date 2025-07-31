@@ -7,8 +7,31 @@ import LogoCarousel from '@/components/LogoCarousel';
 import Navbar from '@/components/Navbar';
 import FAQ from '@/components/FAQ';
 import { trackHeroCTA, trackDemoClick, trackPricingClick } from '@/lib/analytics';
+import { useEffect, useState } from 'react';
+
+const cyclingTexts = [
+  "Trusted by 10,000+ developers",
+  "Always monitoring your repos for leaks",
+  "Supports over 20+ Tech Stacks"
+];
 
 export default function HomePage() {
+  const [currentTextIndex, setCurrentTextIndex] = useState(0);
+  const [isVisible, setIsVisible] = useState(true);
+
+  // Cycling text animation for hero section
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIsVisible(false);
+      setTimeout(() => {
+        setCurrentTextIndex((prev) => (prev + 1) % cyclingTexts.length);
+        setIsVisible(true);
+      }, 300);
+    }, 3000); // Change text every 3 seconds
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
       {/* Navigation */}
@@ -20,7 +43,13 @@ export default function HomePage() {
           <div className="text-center">
             <div className="inline-flex items-center px-4 py-2 rounded-full bg-blue-100 text-blue-800 text-sm font-medium mb-8">
               <Shield className="w-4 h-4 mr-2" />
-              Trusted by 10,000+ developers
+              <div 
+                className={`transition-all duration-500 ease-in-out ${
+                  isVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-4'
+                }`}
+              >
+                {cyclingTexts[currentTextIndex]}
+              </div>
             </div>
             
             <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">

@@ -152,20 +152,27 @@ const logos = [
   }
 ];
 
+const cyclingTexts = [
+  "Trusted by 10,000+ developers",
+  "Always monitoring your repos for leaks",
+  "Supports over 20+ Tech Stacks"
+];
+
 export default function LogoCarousel() {
-  const [scrollPosition, setScrollPosition] = useState(0);
   const [logoErrors, setLogoErrors] = useState<{[key: string]: boolean}>({});
   const [logoFallbacks, setLogoFallbacks] = useState<{[key: string]: boolean}>({});
+  const [currentTextIndex, setCurrentTextIndex] = useState(0);
+  const [isVisible, setIsVisible] = useState(true);
 
+  // Cycling text animation
   useEffect(() => {
     const interval = setInterval(() => {
-      setScrollPosition((prev) => {
-        // Move by 100px every 2.5 seconds for smoother scrolling
-        const newPosition = prev + 100;
-        // Reset when we've scrolled through all logos
-        return newPosition >= logos.length * 120 ? 0 : newPosition;
-      });
-    }, 2500); // Change every 2.5 seconds
+      setIsVisible(false);
+      setTimeout(() => {
+        setCurrentTextIndex((prev) => (prev + 1) % cyclingTexts.length);
+        setIsVisible(true);
+      }, 300);
+    }, 3000); // Change text every 3 seconds
 
     return () => clearInterval(interval);
   }, []);
@@ -192,7 +199,13 @@ export default function LogoCarousel() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-8">
           <h3 className="text-lg font-semibold text-gray-600 mb-2">
-            Trusted by developers worldwide
+            <div 
+              className={`inline-block transition-all duration-500 ease-in-out ${
+                isVisible ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-4'
+              }`}
+            >
+              {cyclingTexts[currentTextIndex]}
+            </div>
           </h3>
           <p className="text-sm text-gray-500">
             Detecting secrets across all major platforms and services
@@ -200,21 +213,22 @@ export default function LogoCarousel() {
         </div>
         
         <div className="relative overflow-hidden">
-          {/* Continuous scrolling carousel */}
+          {/* Smooth flowing logo carousel */}
           <div 
-            className="flex items-center space-x-8 transition-transform duration-2500 ease-in-out"
+            className="flex items-center space-x-8 animate-scroll"
             style={{ 
-              transform: `translateX(-${scrollPosition}px)`,
-              width: `${logos.length * 120}px` // 120px per logo (80px logo + 40px spacing)
+              width: `${logos.length * 240}px` // Double width for seamless loop
             }}
           >
             {/* Duplicate logos for seamless loop */}
             {[...logos, ...logos].map((logo, index) => (
               <div
                 key={`${logo.name}-${index}`}
-                className="flex flex-col items-center min-w-[80px]"
+                className="flex flex-col items-center min-w-[80px] hover:scale-105 transition-transform duration-200"
               >
-                <div className="w-16 h-16 bg-white rounded-lg flex items-center justify-center mb-3 shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+                <div 
+                  className="w-16 h-16 bg-white rounded-lg flex items-center justify-center mb-3 shadow-sm border border-gray-200 hover:shadow-lg transition-all duration-200"
+                >
                   {!logoErrors[logo.name] ? (
                     <img
                       src={logoFallbacks[logo.name] ? logo.apiLogo : logo.logo}
