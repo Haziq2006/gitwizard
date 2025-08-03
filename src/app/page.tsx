@@ -6,13 +6,15 @@ import FeedbackButton from '@/components/FeedbackButton';
 import LogoCarousel from '@/components/LogoCarousel';
 import Navbar from '@/components/Navbar';
 import FAQ from '@/components/FAQ';
+import ComparisonTable from '@/components/ComparisonTable';
 import { trackHeroCTA, trackDemoClick, trackPricingClick } from '@/lib/analytics';
 import { useEffect, useState } from 'react';
 
 const cyclingTexts = [
   "Trusted by 10,000+ developers",
   "Always monitoring your repos for leaks",
-  "Supports over 20+ Tech Stacks"
+  "Supports over 20+ Tech Stacks",
+  "Protects your data from leaks",
 ];
 
 export default function HomePage() {
@@ -432,6 +434,9 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Comparison Table Section */}
+      <ComparisonTable />
 
       {/* FAQ Section */}
       <FAQ />
