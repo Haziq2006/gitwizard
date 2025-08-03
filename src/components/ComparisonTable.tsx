@@ -115,7 +115,7 @@ export default function ComparisonTable() {
             GitWizard vs GitHub Secret Scanning
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            See how GitWizard provides more comprehensive security monitoring than GitHub's built-in features
+            See how GitWizard provides more comprehensive security monitoring than GitHub&apos;s built-in features
           </p>
         </div>
 
