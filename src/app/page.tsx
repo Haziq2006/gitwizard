@@ -14,7 +14,7 @@ const cyclingTexts = [
   "Trusted by 10,000+ developers",
   "Always monitoring your repos for leaks",
   "Supports over 20+ Tech Stacks",
-  "Protects your data from leaks",
+  "Protects your data from leaks"
 ];
 
 export default function HomePage() {
