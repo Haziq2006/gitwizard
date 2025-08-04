@@ -7,6 +7,7 @@ import LogoCarousel from '@/components/LogoCarousel';
 import Navbar from '@/components/Navbar';
 import FAQ from '@/components/FAQ';
 import ComparisonTable from '@/components/ComparisonTable';
+import CaseStudies from '@/components/CaseStudies';
 import { trackHeroCTA, trackDemoClick, trackPricingClick } from '@/lib/analytics';
 import { useEffect, useState } from 'react';
 
@@ -437,6 +438,9 @@ export default function HomePage() {
 
       {/* Comparison Table Section */}
       <ComparisonTable />
+
+      {/* Case Studies Section */}
+      <CaseStudies />
 
       {/* FAQ Section */}
       <FAQ />
